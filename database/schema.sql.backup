@@ -25,17 +25,6 @@ CREATE TABLE users (
 );
 
 -- ============================================
--- DELIVERY PARTNERS TABLE
--- ============================================
-CREATE TABLE delivery_partners (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID UNIQUE NOT NULL REFERENCES users(user_id),
-    vehicle_type VARCHAR(100),
-    is_available BOOLEAN DEFAULT true,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- ============================================
 -- RESTAURANTS TABLE
 -- ============================================
 CREATE TABLE restaurants (
@@ -146,9 +135,6 @@ CREATE TABLE order_items (
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_role ON users(role);
 
-CREATE INDEX idx_delivery_partners_user_id ON delivery_partners(user_id);
-CREATE INDEX idx_delivery_partners_available ON delivery_partners(is_available);
-
 CREATE INDEX idx_restaurants_cuisine ON restaurants(cuisine_type);
 CREATE INDEX idx_restaurants_city ON restaurants(city);
 CREATE INDEX idx_restaurants_active ON restaurants(is_active, is_available);
@@ -162,8 +148,6 @@ CREATE INDEX idx_orders_restaurant ON orders(restaurant_id);
 CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_orders_created ON orders(created_at);
 CREATE INDEX idx_orders_order_number ON orders(order_number);
-CREATE INDEX idx_orders_delivery_partner ON orders(delivery_partner_id);
-CREATE INDEX idx_orders_delivery_status ON orders(delivery_status);
 
 CREATE INDEX idx_order_items_order ON order_items(order_id);
 CREATE INDEX idx_order_items_item ON order_items(item_id);
@@ -194,11 +178,3 @@ CREATE TRIGGER update_food_items_updated_at
 CREATE TRIGGER update_orders_updated_at
     BEFORE UPDATE ON orders
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_delivery_partners_updated_at
-    BEFORE UPDATE ON delivery_partners
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
--- Add delivery_partner_id and delivery_status columns to orders table
-ALTER TABLE orders ADD COLUMN delivery_partner_id UUID REFERENCES delivery_partners(id);
-ALTER TABLE orders ADD COLUMN delivery_status VARCHAR(20) DEFAULT 'Assigned' CHECK (delivery_status IN ('Assigned', 'Accepted', 'Picked Up', 'On The Way', 'Delivered'));

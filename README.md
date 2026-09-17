@@ -110,7 +110,7 @@ foodproj/
           │                   │                   │
     ┌─────▼─────┐      ┌─────▼─────┐      ┌─────▼─────┐
     │  Browser  │      │   Host    │      │  Volume   │
-    │localhost  │      │ :5000     │      │ postgres_ │
+    │localhost  │      │ :5000     │      │  postgres_  │
     │  :3000    │      │           │      │   data    │
     └───────────┘      └───────────┘      └───────────┘
 ```
@@ -181,6 +181,59 @@ docker-compose exec postgres psql -U foodexpress_admin -d foodexpress
 | admin@foodexpress.com | admin123 | admin |
 | owner@restaurant.com | owner123 | owner |
 | john@example.com | customer123 | customer |
+
+## Delivery Partner Module
+
+The Delivery Partner module allows delivery partners to log in, view assigned orders, and manage the delivery process.
+
+### New Features
+
+- **Delivery Partner Login**: Delivery partners can log in using their email and password at `/delivery/login`.
+- **Dashboard**: View statistics on active and completed deliveries.
+- **Assigned Orders**: View list of orders assigned to the delivery partner with options to accept, pick up, mark as on the way, and deliver.
+- **Order Details**: View detailed information about a specific order and update delivery status.
+- **Profile**: Update personal information and delivery partner specific details (vehicle type, availability).
+
+### API Endpoints
+
+#### Delivery Partner
+- `POST /api/delivery/login` - Login as delivery partner
+- `GET /api/delivery/dashboard` - Get dashboard statistics
+- `GET /api/delivery/orders` - Get assigned orders
+- `GET /api/delivery/orders/:id` - Get order by ID
+- `PUT /api/delivery/orders/:id/accept` - Accept order
+- `PUT /api/delivery/orders/:id/pickup` - Pick up order
+- `PUT /api/delivery/orders/:id/on-the-way` - Mark order as on the way
+- `PUT /api/delivery/orders/:id/delivered` - Mark order as delivered
+- `GET /api/delivery/profile` - Get delivery partner profile
+- `PUT /api/delivery/profile` - Update delivery partner profile
+
+#### Admin
+- `GET /api/admin/delivery-partners` - Get all delivery partners
+- `POST /api/admin/delivery-partners` - Create delivery partner
+- `PUT /api/admin/delivery-partners/:id` - Update delivery partner
+- `DELETE /api/admin/delivery-partners/:id` - Delete delivery partner
+- `PUT /api/admin/orders/:id/assign-delivery-partner` - Assign delivery partner to order
+
+### Default Delivery Partners (Seed Data)
+
+| Email | Password | Role |
+|-------|----------|------|
+| mike.w@email.com | delivery123 | delivery_partner |
+| sarah.b@email.com | delivery123 | delivery_partner |
+
+### Database Changes
+
+Added `delivery_partners` table:
+- `id` (UUID, primary key)
+- `user_id` (UUID, foreign key to users)
+- `vehicle_type` (VARCHAR)
+- `is_available` (BOOLEAN)
+- `created_at` (TIMESTAMP)
+
+Updated `orders` table:
+- `delivery_partner_id` (UUID, foreign key to delivery_partners)
+- `delivery_status` (VARCHAR with values: 'Assigned', 'Accepted', 'Picked Up', 'On The Way', 'Delivered')
 
 ## API Endpoints
 

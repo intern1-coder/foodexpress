@@ -18,15 +18,6 @@ INSERT INTO users (user_id, first_name, last_name, email, password_hash, phone, 
 ('f6a7b8c9-d0e1-2345-fabc-456789012345', 'Sarah', 'Brown', 'sarah.b@email.com', '$2b$12$riXepRW8/LOsAQM9UbS7N.5Ojk/D87tDVPXCa0RmaIjjog7TEH4QC', '+1-555-0106', '303 Rider Dr', 'Bronx', 'NY', '10451', 'delivery_partner');
 
 -- ============================================
--- DELIVERY PARTNERS
--- ============================================
-INSERT INTO delivery_partners (id, user_id, vehicle_type, is_available) VALUES
--- For Mike Wilson (user_id: e5f6a7b8-c9d0-1234-efab-345678901234)
-('d4e5f6a7-b8c9-0123-defa-234567890124', 'e5f6a7b8-c9d0-1234-efab-345678901234', 'Motorcycle', true),
--- For Sarah Brown (user_id: f6a7b8c9-d0e1-2345-fabc-456789012345)
-('d4e5f6a7-b8c9-0123-defa-234567890125', 'f6a7b8c9-d0e1-2345-fabc-456789012345', 'Car', true);
-
--- ============================================
 -- RESTAURANTS
 -- ============================================
 INSERT INTO restaurants (restaurant_id, name, description, cuisine_type, address, city, state, zip_code, phone, email, opening_time, closing_time, rating, delivery_fee, minimum_order, estimated_delivery_time) VALUES
@@ -152,8 +143,8 @@ INSERT INTO order_items (order_item_id, order_id, item_id, quantity, unit_price,
 -- Order 4: Jane - Casa Mexicana (Chicken Tacos + Nachos + Veggie Burrito)
 INSERT INTO order_items (order_item_id, order_id, item_id, quantity, unit_price, total_price) VALUES
 ('oi-0004-0001', 'order-0002-0002-0002-000200000002', 'ddd44444-1111-1111-1111-111111111111', 1, 11.99, 11.99),
-('oi-0004-0002', 'order-0002-0002-0002-0002000200000002', 'ddd44444-3333-3333-3333-333333333333', 1, 9.99, 9.99),
-('oi-0004-0003', 'order-0002-0002-0002-0002000200000002', 'ddd44444-4444-4444-4444-444444444444', 1, 6.99, 6.99);
+('oi-0004-0002', 'order-0002-0002-0002-000200000002', 'ddd44444-3333-3333-3333-333333333333', 1, 9.99, 9.99),
+('oi-0004-0003', 'order-0002-0002-0002-000200000002', 'ddd44444-4444-4444-4444-444444444444', 1, 6.99, 6.99);
 
 -- Order 5: Bob - Dragon Wok (Kung Pao Chicken + Veggie Lo Mein + Spring Rolls x2)
 INSERT INTO order_items (order_item_id, order_id, item_id, quantity, unit_price, total_price) VALUES

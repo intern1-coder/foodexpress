@@ -1,6 +1,6 @@
 /**
  * App Component
- * 
+ *
  * Main application with routing
  */
 
@@ -31,6 +31,15 @@ import {
   ManageUsers,
   AdminLayout
 } from './pages/admin';
+
+// Delivery Partner Pages
+import {
+  DeliveryLogin,
+  DeliveryDashboard,
+  AssignedOrders,
+  OrderDetails,
+  DeliveryPartnerProfile
+} from './pages/delivery';
 
 // Styles
 import './styles/index.css';
@@ -114,6 +123,36 @@ const App = () => {
                           }
                         />
 
+                        {/* Delivery Partner Routes */}
+                        <Route
+                          path="/delivery"
+                          element={
+                            <div className="main-layout">
+                              <Navbar />
+                              <main className="main-content">
+                                <Routes>
+                                  <Route path="login" element={<DeliveryLogin />} />
+                                  <Route
+                                    element={
+                                      <ProtectedRoute requiredRole="delivery_partner">
+                                        <DeliveryPartnerLayout />
+                                      </ProtectedRoute>
+                                    }
+                                  >
+                                    <Route index element={<DeliveryDashboard />} />
+                                    <Route path="orders" element={<AssignedOrders />} />
+                                    <Route path="orders/:id" element={<OrderDetails />} />
+                                    <Route path="profile" element={<DeliveryPartnerProfile />} />
+                                  </Route>
+                                  {/* 404 Page for Delivery Partner */}
+                                  <Route path="*" element={<NotFound />} />
+                                </Routes>
+                              </main>
+                              <Footer />
+                            </div>
+                          }
+                        />
+
                         {/* 404 Page */}
                         <Route path="*" element={<NotFound />} />
                       </Routes>
@@ -140,5 +179,14 @@ const NotFound = () => (
     </div>
   </div>
 );
+
+// Delivery Partner Layout (simple layout for delivery partner protected routes)
+const DeliveryPartnerLayout = () => {
+  return (
+    <>
+      {/* Delivery partner pages will render here */}
+    </>
+  );
+};
 
 export default App;
