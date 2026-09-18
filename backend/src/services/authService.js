@@ -1,6 +1,6 @@
 /**
  * Authentication Service
- * 
+ *
  * Handles user registration, login, and token management
  */
 
@@ -16,7 +16,6 @@ const SALT_ROUNDS = 12;
  */
 const register = async (userData) => {
   const client = await getClient();
-
   try {
     await client.query('BEGIN');
 
@@ -123,11 +122,12 @@ const login = async (email, password) => {
     throw new Error('Invalid email or password');
   }
 
-  // Generate JWT token
+  // Generate JWT token - ensure role is a clean string
+  const cleanRole = String(user.role).trim();
   const token = generateToken({
     userId: user.user_id,
     email: user.email,
-    role: user.role
+    role: cleanRole
   });
 
   return {
@@ -139,7 +139,7 @@ const login = async (email, password) => {
         lastName: user.last_name,
         email: user.email,
         phone: user.phone,
-        role: user.role
+        role: cleanRole
       },
       token,
       expiresIn: process.env.JWT_EXPIRES_IN || '24h'
@@ -152,7 +152,6 @@ const login = async (email, password) => {
  */
 const changePassword = async (userId, currentPassword, newPassword) => {
   const client = await getClient();
-
   try {
     await client.query('BEGIN');
 
@@ -216,11 +215,12 @@ const refreshToken = async (userId) => {
     throw new Error('Account is deactivated');
   }
 
-  // Generate new token
+  // Generate new token - ensure role is a clean string
+  const cleanRole = String(user.role).trim();
   const token = generateToken({
     userId: user.user_id,
     email: user.email,
-    role: user.role
+    role: cleanRole
   });
 
   return {

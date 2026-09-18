@@ -1,0 +1,16 @@
+npm notice run foodexpress-backend@1.0.0 start
+npm notice run node src/server.js
+
+╔════════════════════════════════════════════════════╗
+║                                                   ║
+║           FoodExpress Backend v1.0.0               ║
+║                                                   ║
+║   Server running on port 3000                    ║
+║   Environment: development                      ║
+║                                                   ║
+║   API Endpoints:                                  ║
+║   - Health:  http://localhost:3000/health         ║
+║   - API:     http://localhost:3000/api            ║
+║                                                   ║
+╚════════════════════════════════════════════════════╝
+  

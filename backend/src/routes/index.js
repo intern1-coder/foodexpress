@@ -1,6 +1,6 @@
 /**
  * Routes Index
- * 
+ *
  * Define all API routes here
  */
 
@@ -12,6 +12,8 @@ const userRoutes = require('./userRoutes');
 const restaurantRoutes = require('./restaurantRoutes');
 const foodRoutes = require('./foodRoutes');
 const orderRoutes = require('./orderRoutes');
+const deliveryPartnerRoutes = require('./deliveryPartnerRoutes');
+const adminDeliveryPartnerRoutes = require('./adminDeliveryPartnerRoutes');
 
 // ============================================
 // Mount Routes
@@ -31,5 +33,11 @@ router.use('/foods', foodRoutes);
 
 // Order routes
 router.use('/orders', orderRoutes);
+
+// Delivery partner routes
+router.use('/delivery', deliveryPartnerRoutes);
+
+// Admin delivery partner routes
+router.use('/admin', adminDeliveryPartnerRoutes);
 
 module.exports = router;

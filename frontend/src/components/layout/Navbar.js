@@ -9,7 +9,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth, useCart } from '../../context';
 
 const Navbar = () => {
-  const { isAuthenticated, user, logout, isAdmin } = useAuth();
+  const { isAuthenticated, user, logout, isAdmin, isCustomer, isDeliveryPartner } = useAuth();
   const { getItemCount } = useCart();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -41,7 +41,7 @@ const Navbar = () => {
               Home
             </Link>
 
-            {isAuthenticated && !isAdmin() && (
+            {isAuthenticated && isCustomer() && (
               <>
                 <Link to="/orders" className="nav-link" onClick={() => setMenuOpen(false)}>
                   My Orders
@@ -51,6 +51,17 @@ const Navbar = () => {
                   {getItemCount() > 0 && (
                     <span className="cart-badge">{getItemCount()}</span>
                   )}
+                </Link>
+              </>
+            )}
+
+            {isAuthenticated && isDeliveryPartner() && (
+              <>
+                <Link to="/delivery/dashboard" className="nav-link" onClick={() => setMenuOpen(false)}>
+                  Dashboard
+                </Link>
+                <Link to="/delivery/orders" className="nav-link" onClick={() => setMenuOpen(false)}>
+                  My Deliveries
                 </Link>
               </>
             )}
@@ -65,7 +76,7 @@ const Navbar = () => {
           <div className="navbar-auth">
             {isAuthenticated ? (
               <div className="user-menu">
-                <Link to="/profile" className="nav-link user-link" onClick={() => setMenuOpen(false)}>
+                <Link to={isDeliveryPartner() ? "/delivery/profile" : "/profile"} className="nav-link user-link" onClick={() => setMenuOpen(false)}>
                   {user?.firstName}
                 </Link>
                 <button className="btn btn-outline btn-sm" onClick={handleLogout}>

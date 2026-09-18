@@ -1,19 +1,38 @@
 const bcrypt = require('bcrypt');
-const { query } = require('./src/config/database');
+const { Pool } = require('pg');
+
+const SALT_ROUNDS = 12;
+
+const users = [
+  { email: 'john.doe@email.com', password: 'Customer123!' },
+  { email: 'jane.smith@email.com', password: 'Customer123!' },
+  { email: 'bob.j@email.com', password: 'Customer123!' },
+  { email: 'admin@foodexpress.com', password: 'Admin123!' },
+  { email: 'mike.w@email.com', password: 'Delivery123!' },
+  { email: 'sarah.b@email.com', password: 'Delivery123!' },
+];
 
 (async () => {
-  const passwords = {
-    'john.doe@email.com': 'Customer123!',
-    'jane.smith@email.com': 'Customer123!',
-    'bob.j@email.com': 'Customer123!',
-    'admin@foodexpress.com': 'Admin123!',
-    'mike.w@email.com': 'Delivery123!',
-    'sarah.b@email.com': 'Delivery123!'
-  };
-  for (const [email, pass] of Object.entries(passwords)) {
-    const hash = await bcrypt.hash(pass, 12);
-    await query('UPDATE users SET password_hash = $1 WHERE email = $2', [hash, email]);
-    console.log('Updated:', email);
+  const pool = new Pool({
+    host: process.env.POSTGRES_HOST || 'postgres',
+    port: parseInt(process.env.POSTGRES_PORT, 10) || 5432,
+    database: process.env.POSTGRES_DB || 'foodexpress',
+    user: process.env.POSTGRES_USER || 'foodexpress_admin',
+    password: process.env.POSTGRES_PASSWORD || 'your_secure_password_here',
+  });
+
+  for (const { email, password } of users) {
+    const hash = await bcrypt.hash(password, SALT_ROUNDS);
+    const result = await pool.query(
+      'UPDATE users SET password_hash = $1 WHERE email = $2',
+      [hash, email]
+    );
+    console.log(`Updated ${email} (${result.rowCount} row) — hash: ${hash.substring(0, 20)}...`);
+
+    const verify = await bcrypt.compare(password, hash);
+    console.log(`  verify: bcrypt.compare("${password}", newHash) = ${verify}`);
   }
-  process.exit(0);
+
+  await pool.end();
+  console.log('Done.');
 })();

@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import { AuthProvider, CartProvider } from './context';
 import { Navbar, Footer } from './components/layout';
 import { ProtectedRoute } from './components/common';
@@ -85,7 +85,7 @@ const App = () => {
                         <Route
                           path="/cart"
                           element={
-                            <ProtectedRoute>
+                            <ProtectedRoute requiredRole="customer">
                               <Cart />
                             </ProtectedRoute>
                           }
@@ -93,7 +93,7 @@ const App = () => {
                         <Route
                           path="/checkout"
                           element={
-                            <ProtectedRoute>
+                            <ProtectedRoute requiredRole="customer">
                               <Checkout />
                             </ProtectedRoute>
                           }
@@ -101,7 +101,7 @@ const App = () => {
                         <Route
                           path="/orders"
                           element={
-                            <ProtectedRoute>
+                            <ProtectedRoute requiredRole="customer">
                               <MyOrders />
                             </ProtectedRoute>
                           }
@@ -109,7 +109,7 @@ const App = () => {
                         <Route
                           path="/orders/:id"
                           element={
-                            <ProtectedRoute>
+                            <ProtectedRoute requiredRole="customer">
                               <MyOrders />
                             </ProtectedRoute>
                           }
@@ -117,7 +117,7 @@ const App = () => {
                         <Route
                           path="/profile"
                           element={
-                            <ProtectedRoute>
+                            <ProtectedRoute requiredRole="customer">
                               <Profile />
                             </ProtectedRoute>
                           }
@@ -182,11 +182,7 @@ const NotFound = () => (
 
 // Delivery Partner Layout (simple layout for delivery partner protected routes)
 const DeliveryPartnerLayout = () => {
-  return (
-    <>
-      {/* Delivery partner pages will render here */}
-    </>
-  );
+  return <Outlet />;
 };
 
 export default App;

@@ -2,7 +2,7 @@
  * Login Page
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context';
 import { Input, Button } from '../../components/ui';
@@ -32,8 +32,17 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await login(formData.email, formData.password);
-      navigate(from, { replace: true });
+      const result = await login(formData.email, formData.password);
+      const loggedInUser = result?.data?.user;
+
+      // Redirect based on role
+      if (loggedInUser?.role === 'admin') {
+        navigate('/admin', { replace: true });
+      } else if (loggedInUser?.role === 'delivery_partner') {
+        navigate('/delivery/dashboard', { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (error) {
       setErrors({
         general: error.response?.data?.message || 'Login failed'

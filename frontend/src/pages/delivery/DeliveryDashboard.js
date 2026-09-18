@@ -9,6 +9,7 @@ import { Card, StatBox, LoadingSpinner, ErrorMessage } from '../../components/ui
 
 const DeliveryDashboard = () => {
   const { user, isDeliveryPartner } = useAuth();
+  const isDP = typeof isDeliveryPartner === 'function' ? isDeliveryPartner() : !!isDeliveryPartner;
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -27,12 +28,12 @@ const DeliveryDashboard = () => {
       }
     };
 
-    if (isDeliveryPartner) {
+    if (isDP) {
       fetchDashboard();
     }
-  }, [isDeliveryPartner]);
+  }, [isDP]);
 
-  if (!isDeliveryPartner) {
+  if (!isDP) {
     return (
       <div className="dashboard-page">
         <div className="dashboard-container">

@@ -1,10 +1,10 @@
 /**
  * FoodExpress Backend Entry Point
- * 
+ *
  * Express server with authentication and user management
  */
 
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
 
 const express = require('express');
 const cors = require('cors');
@@ -90,7 +90,7 @@ app.use(errorHandler);
 // ============================================
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`
-╔═══════════════════════════════════════════════════╗
+╔════════════════════════════════════════════════════╗
 ║                                                   ║
 ║           FoodExpress Backend v1.0.0               ║
 ║                                                   ║
@@ -101,7 +101,7 @@ const server = app.listen(PORT, '0.0.0.0', () => {
 ║   - Health:  http://localhost:${PORT}/health         ║
 ║   - API:     http://localhost:${PORT}/api            ║
 ║                                                   ║
-╚═══════════════════════════════════════════════════╝
+╚════════════════════════════════════════════════════╝
   `);
 });
 

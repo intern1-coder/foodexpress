@@ -6,16 +6,16 @@
 -- ============================================
 INSERT INTO users (user_id, first_name, last_name, email, password_hash, phone, address, city, state, zip_code, role) VALUES
 -- Customers (password: Customer123!)
-('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'John', 'Doe', 'john.doe@email.com', '$2b$12$.cys/isN4VezeHeNMfY8cu7ZJgeXdXGKs1ctsz8K1QaX6/v3aHcZi', '+1-555-0101', '123 Main St', 'New York', 'NY', '10001', 'customer'),
-('b2c3d4e5-f6a7-8901-bcde-f12345678901', 'Jane', 'Smith', 'jane.smith@email.com', '$2b$12$r2X5TCZoGg128SBnMoOuYuGf5OHH.juMemD8XGPWLE8.hj6EKRe/m', '+1-555-0102', '456 Oak Ave', 'New York', 'NY', '10002', 'customer'),
-('c3d4e5f6-a7b8-9012-cdef-123456789012', 'Bob', 'Johnson', 'bob.j@email.com', '$2b$12$boxVi1bOys7dTD04woOKVecoCN0uIs9sR1M30pYs.bTny1E0q4kYG', '+1-555-0103', '789 Pine Rd', 'Brooklyn', 'NY', '11201', 'customer'),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'John', 'Doe', 'john.doe@email.com', '$2b$12$kyIYbdFYU9at8gOREX6ROOdatOdNxfxhTABtNYaG5GbjRB7l.dY3K', '+1-555-0101', '123 Main St', 'New York', 'NY', '10001', 'customer'),
+('b2c3d4e5-f6a7-8901-bcde-f12345678901', 'Jane', 'Smith', 'jane.smith@email.com', '$2b$12$YD6lSluPm4Ustx43lZXmmOLN.w3n1Mp7XYpAa0vXEmLhpZAA/Xcza', '+1-555-0102', '456 Oak Ave', 'New York', 'NY', '10002', 'customer'),
+('c3d4e5f6-a7b8-9012-cdef-123456789012', 'Bob', 'Johnson', 'bob.j@email.com', '$2b$12$4n2HSKFwY1/OVUxoD/fSOOPG3.0VrxVxJIkq9mypwvpp1nd7TiZWm', '+1-555-0103', '789 Pine Rd', 'Brooklyn', 'NY', '11201', 'customer'),
 
 -- Admin (password: Admin123!)
-('d4e5f6a7-b8c9-0123-defa-234567890123', 'Admin', 'User', 'admin@foodexpress.com', '$2b$12$sJrKlK48MzUqcamIKRZ2ROba5n0reu.0YwEsNzWtc7SOSglP8CV0.', '+1-555-0104', '100 Admin Blvd', 'New York', 'NY', '10000', 'admin'),
+('d4e5f6a7-b8c9-0123-defa-234567890123', 'Admin', 'User', 'admin@foodexpress.com', '$2b$12$bajKL19byiXAmCRcOkcKRuc.D2zNGjWU1ld4GgdgcikybZa0Babyi', '+1-555-0104', '100 Admin Blvd', 'New York', 'NY', '10000', 'admin'),
 
 -- Delivery Partners (password: Delivery123!)
-('e5f6a7b8-c9d0-1234-efab-345678901234', 'Mike', 'Wilson', 'mike.w@email.com', '$2b$12$tylW22yPB/E2Mqcht/9cFegYRLsDtqpbNYlC22C3yQ6WVReEs1KT2', '+1-555-0105', '202 Delivery Ln', 'Queens', 'NY', '11101', 'delivery_partner'),
-('f6a7b8c9-d0e1-2345-fabc-456789012345', 'Sarah', 'Brown', 'sarah.b@email.com', '$2b$12$riXepRW8/LOsAQM9UbS7N.5Ojk/D87tDVPXCa0RmaIjjog7TEH4QC', '+1-555-0106', '303 Rider Dr', 'Bronx', 'NY', '10451', 'delivery_partner');
+('e5f6a7b8-c9d0-1234-efab-345678901234', 'Mike', 'Wilson', 'mike.w@email.com', '$2b$12$SYXdhIftqfd34wAmV7eFyOyEJSdyZqnmzRfSPnF0YyG.J/bPQX9vu', '+1-555-0105', '202 Delivery Ln', 'Queens', 'NY', '11101', 'delivery_partner'),
+('f6a7b8c9-d0e1-2345-fabc-456789012345', 'Sarah', 'Brown', 'sarah.b@email.com', '$2b$12$LYsCaVizkC8Y2fTVXsu/o.AELoFIrbB4RI0f5Z0ROuwNj6IKlRJ5y', '+1-555-0106', '303 Rider Dr', 'Bronx', 'NY', '10451', 'delivery_partner');
 
 -- ============================================
 -- DELIVERY PARTNERS
@@ -102,7 +102,7 @@ INSERT INTO food_items (item_id, restaurant_id, name, description, price, catego
 
 -- Thai Orchid (Thai) - Restaurant 77777777...
 INSERT INTO food_items (item_id, restaurant_id, name, description, price, category, is_vegetarian, is_vegan, is_gluten_free, preparation_time, calories) VALUES
-('ggg77777-1111-1111-1111-111111111111', '77777777-7777-7777-7777-777777777777', 'Pad Thai', 'Stir-fried rice noodles with shrimp and peanuts', 13.99, 'Noodles', false, false, true, 15, 560),
+('ffffffff-1111-1111-1111-111111111111', '77777777-7777-7777-7777-777777777777', 'Pad Thai', 'Stir-fried rice noodles with shrimp and peanuts', 13.99, 'Noodles', false, false, true, 15, 560),
 ('ggg77777-2222-2222-2222-222222222222', '77777777-7777-7777-7777-777777777777', 'Green Curry', 'Coconut curry with bamboo shoots and Thai basil', 14.99, 'Curry', false, false, true, 18, 480),
 ('ggg77777-3333-3333-3333-333333333333', '77777777-7777-7777-7777-777777777777', 'Mango Sticky Rice', 'Sweet coconut sticky rice with fresh mango', 7.99, 'Dessert', true, true, true, 10, 380),
 ('ggg77777-4444-4444-4444-444444444444', '77777777-7777-7777-7777-777777777777', 'Tom Yum Soup', 'Spicy and sour Thai soup with shrimp', 10.99, 'Soup', false, false, true, 12, 180);

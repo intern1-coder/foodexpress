@@ -162,6 +162,12 @@ CREATE INDEX idx_orders_restaurant ON orders(restaurant_id);
 CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_orders_created ON orders(created_at);
 CREATE INDEX idx_orders_order_number ON orders(order_number);
+
+-- Add delivery_partner_id and delivery_status columns to orders table
+ALTER TABLE orders ADD COLUMN delivery_partner_id UUID REFERENCES delivery_partners(id);
+ALTER TABLE orders ADD COLUMN delivery_status VARCHAR(20) DEFAULT 'Assigned' CHECK (delivery_status IN ('Assigned', 'Accepted', 'Picked Up', 'On The Way', 'Delivered'));
+
+-- Now create indexes on the newly added columns
 CREATE INDEX idx_orders_delivery_partner ON orders(delivery_partner_id);
 CREATE INDEX idx_orders_delivery_status ON orders(delivery_status);
 
@@ -198,7 +204,3 @@ CREATE TRIGGER update_orders_updated_at
 CREATE TRIGGER update_delivery_partners_updated_at
     BEFORE UPDATE ON delivery_partners
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
--- Add delivery_partner_id and delivery_status columns to orders table
-ALTER TABLE orders ADD COLUMN delivery_partner_id UUID REFERENCES delivery_partners(id);
-ALTER TABLE orders ADD COLUMN delivery_status VARCHAR(20) DEFAULT 'Assigned' CHECK (delivery_status IN ('Assigned', 'Accepted', 'Picked Up', 'On The Way', 'Delivered'));

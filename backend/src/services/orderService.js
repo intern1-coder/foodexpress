@@ -1,6 +1,6 @@
 /**
  * Order Service
- * 
+ *
  * Handles all order business logic with status management
  */
 
@@ -15,6 +15,15 @@ const STATUS_TRANSITIONS = {
   out_for_delivery: ['delivered'],
   delivered: [],
   cancelled: []
+};
+
+// Valid delivery status transitions
+const DELIVERY_STATUS_TRANSITIONS = {
+  Assigned: ['Accepted'],
+  Accepted: ['Picked Up'],
+  'Picked Up': ['On The Way'],
+  'On The Way': ['Delivered'],
+  Delivered: []
 };
 
 /**
@@ -490,6 +499,335 @@ const getOrderStats = async (restaurantId = null) => {
   };
 };
 
+/**
+ * Get orders assigned to a delivery partner
+ */
+const getDeliveryPartnerOrders = async (deliveryPartnerId) => {
+  const result = await query(
+    `SELECT o.*,
+            r.name as restaurant_name, r.phone as restaurant_phone,
+            r.address as restaurant_address,
+            u.first_name, u.last_name, u.email, u.phone as user_phone,
+            o.delivery_partner_id, o.delivery_status
+     FROM orders o
+     JOIN restaurants r ON o.restaurant_id = r.restaurant_id
+     JOIN users u ON o.user_id = u.user_id
+     WHERE o.delivery_partner_id = $1
+     ORDER BY o.created_at DESC`,
+    [deliveryPartnerId]
+  );
+
+  // Get order items for each order
+  const orders = [];
+  for (const order of result.rows) {
+    const itemsResult = await query(
+      `SELECT oi.*, fi.name as item_name
+       FROM order_items oi
+       JOIN food_items fi ON oi.item_id = fi.item_id
+       WHERE oi.order_id = $1`,
+      [order.order_id]
+    );
+    orders.push(formatOrderWithDelivery(order, itemsResult.rows));
+  }
+
+  return {
+    success: true,
+    data: orders
+  };
+};
+
+/**
+ * Get order by ID for delivery partner (checks assignment)
+ */
+const getOrderByIdForDeliveryPartner = async (orderId, deliveryPartnerId) => {
+  const result = await query(
+    `SELECT o.*,
+            r.name as restaurant_name, r.phone as restaurant_phone,
+            r.address as restaurant_address,
+            u.first_name, u.last_name, u.email, u.phone as user_phone,
+            o.delivery_partner_id, o.delivery_status
+     FROM orders o
+     JOIN restaurants r ON o.restaurant_id = r.restaurant_id
+     JOIN users u ON o.user_id = u.user_id
+     WHERE o.order_id = $1 AND o.delivery_partner_id = $2`,
+    [orderId, deliveryPartnerId]
+  );
+
+  if (result.rows.length === 0) {
+    return null;
+  }
+
+  // Get order items
+  const itemsResult = await query(
+    `SELECT oi.*, fi.name as item_name
+     FROM order_items oi
+     JOIN food_items fi ON oi.item_id = fi.item_id
+     WHERE oi.order_id = $1`,
+    [orderId]
+  );
+
+  return formatOrderWithDelivery(result.rows[0], itemsResult.rows);
+};
+
+/**
+ * Accept order (delivery partner)
+ */
+const acceptOrder = async (orderId, deliveryPartnerId) => {
+  const client = await getClient();
+
+  try {
+    await client.query('BEGIN');
+
+    // Get current order
+    const orderResult = await client.query(
+      `SELECT order_id, delivery_partner_id, delivery_status
+       FROM orders
+       WHERE order_id = $1`,
+      [orderId]
+    );
+
+    if (orderResult.rows.length === 0) {
+      throw new Error('Order not found');
+    }
+
+    const order = orderResult.rows[0];
+
+    // Check if order is assigned to this delivery partner
+    if (order.delivery_partner_id !== deliveryPartnerId) {
+      throw new Error('Order not assigned to you');
+    }
+
+    // Validate delivery status transition
+    const currentStatus = order.delivery_status;
+    const allowedTransitions = DELIVERY_STATUS_TRANSITIONS[currentStatus] || [];
+
+    if (!allowedTransitions.includes('Accepted')) {
+      throw new Error(`Invalid status transition from ${currentStatus} to Accepted`);
+    }
+
+    // Update delivery status
+    const result = await client.query(
+      `UPDATE orders
+       SET delivery_status = 'Accepted', updated_at = CURRENT_TIMESTAMP
+       WHERE order_id = $1
+       RETURNING order_id, delivery_partner_id, delivery_status, updated_at`,
+      [orderId]
+    );
+
+    await client.query('COMMIT');
+
+    return {
+      success: true,
+      data: {
+        orderId: result.rows[0].order_id,
+        deliveryPartnerId: result.rows[0].delivery_partner_id,
+        deliveryStatus: result.rows[0].delivery_status,
+        updatedAt: result.rows[0].updated_at
+      }
+    };
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Pick up order (delivery partner)
+ */
+const pickUpOrder = async (orderId, deliveryPartnerId) => {
+  const client = await getClient();
+
+  try {
+    await client.query('BEGIN');
+
+    // Get current order
+    const orderResult = await client.query(
+      `SELECT order_id, delivery_partner_id, delivery_status
+       FROM orders
+       WHERE order_id = $1`,
+      [orderId]
+    );
+
+    if (orderResult.rows.length === 0) {
+      throw new Error('Order not found');
+    }
+
+    const order = orderResult.rows[0];
+
+    // Check if order is assigned to this delivery partner
+    if (order.delivery_partner_id !== deliveryPartnerId) {
+      throw new Error('Order not assigned to you');
+    }
+
+    // Validate delivery status transition
+    const currentStatus = order.delivery_status;
+    const allowedTransitions = DELIVERY_STATUS_TRANSITIONS[currentStatus] || [];
+
+    if (!allowedTransitions.includes('Picked Up')) {
+      throw new Error(`Invalid status transition from ${currentStatus} to Picked Up`);
+    }
+
+    // Update delivery status
+    const result = await client.query(
+      `UPDATE orders
+       SET delivery_status = 'Picked Up', updated_at = CURRENT_TIMESTAMP
+       WHERE order_id = $1
+       RETURNING order_id, delivery_partner_id, delivery_status, updated_at`,
+      [orderId]
+    );
+
+    await client.query('COMMIT');
+
+    return {
+      success: true,
+      data: {
+        orderId: result.rows[0].order_id,
+        deliveryPartnerId: result.rows[0].delivery_partner_id,
+        deliveryStatus: result.rows[0].delivery_status,
+        updatedAt: result.rows[0].updated_at
+      }
+    };
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Mark order as on the way (delivery partner)
+ */
+const onTheWayOrder = async (orderId, deliveryPartnerId) => {
+  const client = await getClient();
+
+  try {
+    await client.query('BEGIN');
+
+    // Get current order
+    const orderResult = await client.query(
+      `SELECT order_id, delivery_partner_id, delivery_status
+       FROM orders
+       WHERE order_id = $1`,
+      [orderId]
+    );
+
+    if (orderResult.rows.length === 0) {
+      throw new Error('Order not found');
+    }
+
+    const order = orderResult.rows[0];
+
+    // Check if order is assigned to this delivery partner
+    if (order.delivery_partner_id !== deliveryPartnerId) {
+      throw new Error('Order not assigned to you');
+    }
+
+    // Validate delivery status transition
+    const currentStatus = order.delivery_status;
+    const allowedTransitions = DELIVERY_STATUS_TRANSITIONS[currentStatus] || [];
+
+    if (!allowedTransitions.includes('On The Way')) {
+      throw new Error(`Invalid status transition from ${currentStatus} to On The Way`);
+    }
+
+    // Update delivery status
+    const result = await client.query(
+      `UPDATE orders
+       SET delivery_status = 'On The Way', updated_at = CURRENT_TIMESTAMP
+       WHERE order_id = $1
+       RETURNING order_id, delivery_partner_id, delivery_status, updated_at`,
+      [orderId]
+    );
+
+    await client.query('COMMIT');
+
+    return {
+      success: true,
+      data: {
+        orderId: result.rows[0].order_id,
+        deliveryPartnerId: result.rows[0].delivery_partner_id,
+        deliveryStatus: result.rows[0].delivery_status,
+        updatedAt: result.rows[0].updated_at
+      }
+    };
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Mark order as delivered (delivery partner)
+ */
+const deliveredOrder = async (orderId, deliveryPartnerId) => {
+  const client = await getClient();
+
+  try {
+    await client.query('BEGIN');
+
+    // Get current order
+    const orderResult = await client.query(
+      `SELECT order_id, delivery_partner_id, delivery_status
+       FROM orders
+       WHERE order_id = $1`,
+      [orderId]
+    );
+
+    if (orderResult.rows.length === 0) {
+      throw new Error('Order not found');
+    }
+
+    const order = orderResult.rows[0];
+
+    // Check if order is assigned to this delivery partner
+    if (order.delivery_partner_id !== deliveryPartnerId) {
+      throw new Error('Order not assigned to you');
+    }
+
+    // Validate delivery status transition
+    const currentStatus = order.delivery_status;
+    const allowedTransitions = DELIVERY_STATUS_TRANSITIONS[currentStatus] || [];
+
+    if (!allowedTransitions.includes('Delivered')) {
+      throw new Error(`Invalid status transition from ${currentStatus} to Delivered`);
+    }
+
+    // Update delivery status and actual delivery time
+    const result = await client.query(
+      `UPDATE orders
+       SET delivery_status = 'Delivered',
+           actual_delivery_time = CURRENT_TIMESTAMP,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE order_id = $1
+       RETURNING order_id, delivery_partner_id, delivery_status, actual_delivery_time, updated_at`,
+      [orderId]
+    );
+
+    await client.query('COMMIT');
+
+    return {
+      success: true,
+      data: {
+        orderId: result.rows[0].order_id,
+        deliveryPartnerId: result.rows[0].delivery_partner_id,
+        deliveryStatus: result.rows[0].delivery_status,
+        actualDeliveryTime: result.rows[0].actual_delivery_time,
+        updatedAt: result.rows[0].updated_at
+      }
+    };
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
 // Helper: Format order object
 const formatOrder = (o, items = []) => ({
   orderId: o.order_id,
@@ -527,6 +865,13 @@ const formatOrder = (o, items = []) => ({
   updatedAt: o.updated_at
 });
 
+// Helper: Format order object with delivery details
+const formatOrderWithDelivery = (o, items = []) => ({
+  ...formatOrder(o, items),
+  deliveryPartnerId: o.delivery_partner_id,
+  deliveryStatus: o.delivery_status
+});
+
 module.exports = {
   createOrder,
   getOrderById,
@@ -534,5 +879,11 @@ module.exports = {
   getAllOrders,
   updateOrderStatus,
   cancelOrder,
-  getOrderStats
+  getOrderStats,
+  getDeliveryPartnerOrders,
+  getOrderByIdForDeliveryPartner,
+  acceptOrder,
+  pickUpOrder,
+  onTheWayOrder,
+  deliveredOrder
 };
