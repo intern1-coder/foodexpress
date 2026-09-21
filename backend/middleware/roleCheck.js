@@ -1,4 +1,4 @@
-const authenticateToken = require('./auth');
+const { authenticateToken } = require('./auth');
 
 // Middleware to check user role
 const authorizeRole = (...allowedRoles) => {
