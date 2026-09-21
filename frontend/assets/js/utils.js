@@ -36,10 +36,8 @@ const clearUserData = () => {
 const apiRequest = async (endpoint, options = {}) => {
   const token = getToken();
 
-  const headers = {
-    'Content-Type': 'application/json',
-    ...options.headers
-  };
+  const headers = { ...options.headers };
+  if (!(options.body instanceof FormData)) headers['Content-Type'] = 'application/json';
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;

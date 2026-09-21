@@ -142,7 +142,7 @@ function createRestaurantCard(restaurant) {
     ${image}
     <div class="restaurant-body">
       <h3>${restaurant.name}</h3>
-      <div class="cuisine">${restaurant.cuisine || 'Various Cuisines'} · ⭐ ${restaurant.rating || '0.0'} · ${restaurant.delivery_time || 30} min</div>
+      <div class="cuisine">${restaurant.cuisine || 'Various Cuisines'} · <span class="rating-value">★ ${Number(restaurant.rating || 0).toFixed(1)}</span> (${restaurant.rating_count || 0}) · ${restaurant.delivery_time || 30} min</div>
       <p class="description">${restaurant.description || 'No description available'}</p>
       <button class="btn-primary view-menu-btn">View Menu</button>
     </div>
@@ -176,10 +176,11 @@ function createMenuItemCard(item, restaurant) {
   const card = document.createElement('div');
   card.className = 'menu-item-card';
   card.innerHTML = `
-    ${item.image_url ? `<img src="${item.image_url}" alt="${item.name}" class="menu-item-image">` : ''}
+    ${item.image_url ? `<img src="${item.image_url}" alt="${item.name}" class="menu-item-image">` : '<div class="menu-item-image placeholder">Food photo</div>'}
     <div class="item-info">
       <h4>${item.name}</h4>
       <p class="price">${formatCurrency(item.price)}</p>
+      <p class="food-rating"><span class="rating-value">★ ${Number(item.rating || 0).toFixed(1)}</span> (${item.rating_count || 0} ratings)</p>
       <p class="description">${item.description || 'No description'}</p>
       <span class="category">${item.category || 'misc'}</span>
       ${!item.is_available ? '<span class="unavailable">Not Available</span>' : ''}

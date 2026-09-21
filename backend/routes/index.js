@@ -7,6 +7,7 @@ const menuController = require('../controllers/menuController');
 const orderController = require('../controllers/orderController');
 const deliveryController = require('../controllers/deliveryController');
 const reviewController = require('../controllers/reviewController');
+const uploadController = require('../controllers/uploadController');
 const { authenticateToken } = require('../middleware/auth');
 const { authorizeRole } = require('../middleware/roleCheck');
 
@@ -15,6 +16,9 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 router.get('/profile', authenticateToken, authController.getProfile);
 router.put('/profile', authenticateToken, authController.updateProfile);
+
+// Image uploads (restaurant admin)
+router.post('/uploads/image', authenticateToken, authorizeRole('restaurant_admin'), uploadController.handleImageUpload);
 
 // Restaurant routes
 router.get('/restaurants', restaurantController.getAllRestaurants);

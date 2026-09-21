@@ -6,6 +6,7 @@ A full-stack food delivery application built with Node.js, Express.js, PostgreSQ
 
 ### Customer Role
 - Browse restaurants and menu items (with menu modal and cart)
+- See restaurant and food ratings with review counts
 - Place orders with payment mode (Cash on Delivery / Online)
 - View order history and cancel pending orders
 - Live track order status and delivery partner location
@@ -14,6 +15,7 @@ A full-stack food delivery application built with Node.js, Express.js, PostgreSQ
 ### Restaurant Admin Role
 - Manage restaurant profile
 - Add/update/remove menu items
+- Upload restaurant and food photos (up to 5 MB each)
 - Accept / reject incoming orders (with reason)
 - Move orders through preparing -> ready for pickup (auto-generates a pickup OTP)
 - Assign an available delivery partner to each order
@@ -135,6 +137,7 @@ npx serve frontend
 - `GET /api/restaurants/profile` - Get restaurant profile (restaurant_admin only)
 - `GET /api/restaurant/dashboard` - Stats + recent orders (restaurant_admin only)
 - `PUT /api/restaurants/:id` - Update restaurant (restaurant_admin only)
+- `POST /api/uploads/image` - Upload a restaurant or food image (restaurant_admin only; multipart field: `image`)
 
 ### Menu Items
 - `GET /api/restaurants/:restaurantId/menu` - Get menu items for a restaurant

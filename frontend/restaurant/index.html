@@ -51,8 +51,9 @@
                             <input type="tel" id="setup-phone">
                         </div>
                         <div class="form-group">
-                            <label for="setup-image">Image URL</label>
-                            <input type="text" id="setup-image" placeholder="Optional">
+                            <label for="setup-image-file">Restaurant Photo</label>
+                            <input type="file" id="setup-image-file" accept="image/*">
+                            <img id="setup-image-preview" class="profile-image-preview hidden" alt="Restaurant preview">
                         </div>
                         <button type="submit" class="btn-primary">Create Restaurant</button>
                     </form>
@@ -132,8 +133,9 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="menu-image">Image URL</label>
-                                <input type="text" id="menu-image" placeholder="Optional">
+                                <label for="menu-image-file">Food Photo</label>
+                                <input type="file" id="menu-image-file" accept="image/*">
+                                <img id="menu-image-preview" class="profile-image-preview hidden" alt="Food preview">
                             </div>
                             <div class="form-group">
                                 <label>
@@ -213,6 +215,8 @@
                     <div class="form-group">
                         <label for="rest-image">Restaurant Photo URL</label>
                         <input type="url" id="rest-image" placeholder="https://example.com/restaurant.jpg">
+                        <label for="rest-image-file" class="file-upload-label">Or upload a photo</label>
+                        <input type="file" id="rest-image-file" accept="image/*">
                         <img id="rest-image-preview" class="profile-image-preview hidden" alt="Restaurant preview">
                     </div>
                     <div class="form-group">

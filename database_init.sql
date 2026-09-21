@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS restaurants (
     image_url TEXT,
     cuisine VARCHAR(100),
     rating DECIMAL(2,1) DEFAULT 0,
+    rating_count INTEGER DEFAULT 0,
     delivery_time INTEGER DEFAULT 30,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -43,6 +44,8 @@ CREATE TABLE IF NOT EXISTS menu_items (
     price DECIMAL(10, 2) NOT NULL CHECK (price >= 0),
     category VARCHAR(100),
     image_url TEXT,
+    rating DECIMAL(2,1) DEFAULT 0,
+    rating_count INTEGER DEFAULT 0,
     is_available BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -112,6 +115,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
     customer_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     restaurant_id INTEGER REFERENCES restaurants(id) ON DELETE CASCADE,
+    menu_item_id INTEGER REFERENCES menu_items(id) ON DELETE CASCADE,
     rating INTEGER CHECK (rating BETWEEN 1 AND 5),
     comment TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

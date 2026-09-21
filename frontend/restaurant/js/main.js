@@ -57,15 +57,16 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('add-menu-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!restaurant) return alert('Create your restaurant first');
-    const menuData = {
-      name: document.getElementById('menu-name').value,
-      description: document.getElementById('menu-description').value,
-      price: parseFloat(document.getElementById('menu-price').value),
-      category: document.getElementById('menu-category').value,
-      image_url: document.getElementById('menu-image').value || null,
-      is_available: document.getElementById('menu-available').checked
-    };
     try {
+      const imageUrl = await uploadSelectedImage(document.getElementById('menu-image-file').files[0]);
+      const menuData = {
+        name: document.getElementById('menu-name').value,
+        description: document.getElementById('menu-description').value,
+        price: parseFloat(document.getElementById('menu-price').value),
+        category: document.getElementById('menu-category').value,
+        image_url: imageUrl,
+        is_available: document.getElementById('menu-available').checked
+      };
       await apiRequest(`/restaurants/${restaurant.id}/menu`, {
         method: 'POST',
         body: JSON.stringify(menuData)
@@ -96,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
           description: document.getElementById('setup-description').value,
           address: document.getElementById('setup-address').value,
           phone: document.getElementById('setup-phone').value,
-          image_url: document.getElementById('setup-image').value || null
+          image_url: await uploadSelectedImage(document.getElementById('setup-image-file').files[0])
         })
       });
       restaurant = data.restaurant;
@@ -140,7 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
           description: document.getElementById('rest-description').value,
           address: document.getElementById('rest-address').value,
           phone: document.getElementById('rest-phone').value,
-          image_url: document.getElementById('rest-image').value.trim() || null,
+          image_url: await uploadSelectedImage(document.getElementById('rest-image-file').files[0])
+            || document.getElementById('rest-image').value.trim() || null,
           delivery_time: parseInt(document.getElementById('rest-delivery-time').value) || 30
         })
       });
@@ -156,6 +158,15 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('confirm-assign-btn').addEventListener('click', confirmAssign);
   document.getElementById('rest-image').addEventListener('input', (event) => {
     updateRestaurantImagePreview(event.target.value.trim());
+  });
+  document.getElementById('rest-image-file').addEventListener('change', (event) => {
+    updateLocalImagePreview(event.target.files[0], 'rest-image-preview');
+  });
+  document.getElementById('setup-image-file').addEventListener('change', (event) => {
+    updateLocalImagePreview(event.target.files[0], 'setup-image-preview');
+  });
+  document.getElementById('menu-image-file').addEventListener('change', (event) => {
+    updateLocalImagePreview(event.target.files[0], 'menu-image-preview');
   });
 
   loadDashboard();
@@ -173,6 +184,21 @@ function updateRestaurantImagePreview(url) {
   if (!preview) return;
   preview.src = url || '';
   preview.classList.toggle('hidden', !url);
+}
+
+function updateLocalImagePreview(file, previewId) {
+  const preview = document.getElementById(previewId);
+  if (!preview) return;
+  preview.src = file ? URL.createObjectURL(file) : '';
+  preview.classList.toggle('hidden', !file);
+}
+
+async function uploadSelectedImage(file) {
+  if (!file) return null;
+  const formData = new FormData();
+  formData.append('image', file);
+  const data = await apiRequest('/uploads/image', { method: 'POST', body: formData });
+  return data.image_url;
 }
 
 // Fetch restaurant profile without throwing when absent

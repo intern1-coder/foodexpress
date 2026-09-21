@@ -80,7 +80,8 @@ const getAllRestaurants = async (req, res) => {
       .map(r => ({
         id: r.id, name: r.name, description: r.description, address: r.address,
         phone: r.phone, image_url: r.image_url, cuisine: r.cuisine,
-        rating: r.rating, delivery_time: r.delivery_time, created_at: r.created_at
+        rating: r.rating, rating_count: r.rating_count || 0,
+        delivery_time: r.delivery_time, created_at: r.created_at
       }));
     res.json({ restaurants: publicRestaurants });
   } catch (error) {

@@ -227,6 +227,12 @@ section h2 {
     margin-bottom: 10px;
 }
 
+.rating-value,
+.food-rating {
+    color: #f39c12;
+    font-weight: 600;
+}
+
 .restaurant-card .cuisine {
     color: #7f8c8d;
     font-size: 0.9rem;
@@ -245,6 +251,14 @@ section h2 {
     object-fit: cover;
     border-radius: 6px;
     margin-bottom: 12px;
+}
+
+.menu-item-image.placeholder {
+    display: grid;
+    place-items: center;
+    height: 160px;
+    color: #7f8c8d;
+    background: #ecf0f1;
 }
 
 .profile-image-preview {
