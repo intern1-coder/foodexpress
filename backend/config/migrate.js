@@ -97,6 +97,7 @@ const run = async () => {
         order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
         customer_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
         restaurant_id INTEGER REFERENCES restaurants(id) ON DELETE CASCADE,
+        menu_item_id INTEGER REFERENCES menu_items(id) ON DELETE CASCADE,
         rating INTEGER CHECK (rating BETWEEN 1 AND 5),
         comment TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -110,6 +111,10 @@ const run = async () => {
     `ALTER TABLE users ADD COLUMN IF NOT EXISTS longitude DECIMAL(10,8)`,
     `ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS cuisine VARCHAR(100)`,
     `ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS rating DECIMAL(2,1) DEFAULT 0`,
+    `ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS rating_count INTEGER DEFAULT 0`,
+    `ALTER TABLE reviews ADD COLUMN IF NOT EXISTS menu_item_id INTEGER REFERENCES menu_items(id) ON DELETE CASCADE`,
+    `ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS rating DECIMAL(2,1) DEFAULT 0`,
+    `ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS rating_count INTEGER DEFAULT 0`,
     `ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS delivery_time INTEGER DEFAULT 30`,
     `ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE`,
     `ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_mode VARCHAR(20) DEFAULT 'cod'`,
@@ -134,7 +139,11 @@ const run = async () => {
     `CREATE INDEX IF NOT EXISTS idx_deliveries_order ON deliveries(order_id)`,
     `CREATE INDEX IF NOT EXISTS idx_deliveries_partner ON deliveries(delivery_partner_id)`,
     `CREATE INDEX IF NOT EXISTS idx_deliveries_status ON deliveries(status)`,
-    `CREATE INDEX IF NOT EXISTS idx_delivery_locations_delivery ON delivery_locations(delivery_id)`
+    `CREATE INDEX IF NOT EXISTS idx_delivery_locations_delivery ON delivery_locations(delivery_id)`,
+    `CREATE INDEX IF NOT EXISTS idx_reviews_order ON reviews(order_id)`,
+    `CREATE INDEX IF NOT EXISTS idx_reviews_restaurant ON reviews(restaurant_id)`,
+    `CREATE INDEX IF NOT EXISTS idx_reviews_menu_item ON reviews(menu_item_id)`,
+    `CREATE INDEX IF NOT EXISTS idx_reviews_customer ON reviews(customer_id)`
   ];
 
   const constraints = async () => {
@@ -172,6 +181,34 @@ const run = async () => {
       try { await db.query(sql); } catch (e) { /* ignore */ }
     }
     console.log('Indexes ready.');
+
+    // Backfill stored aggregates when this migration is applied to an existing database.
+    await db.query(
+      `UPDATE restaurants r
+       SET rating = COALESCE(stats.average_rating, 0),
+           rating_count = COALESCE(stats.rating_count, 0)
+       FROM (
+         SELECT restaurant_id, ROUND(AVG(rating)::numeric, 1) AS average_rating,
+                COUNT(*)::integer AS rating_count
+         FROM reviews
+         WHERE menu_item_id IS NULL
+         GROUP BY restaurant_id
+       ) stats
+       WHERE r.id = stats.restaurant_id`
+    );
+    await db.query(
+      `UPDATE menu_items mi
+       SET rating = COALESCE(stats.average_rating, 0),
+           rating_count = COALESCE(stats.rating_count, 0)
+       FROM (
+         SELECT menu_item_id, ROUND(AVG(rating)::numeric, 1) AS average_rating,
+                COUNT(*)::integer AS rating_count
+         FROM reviews
+         WHERE menu_item_id IS NOT NULL
+         GROUP BY menu_item_id
+       ) stats
+       WHERE mi.id = stats.menu_item_id`
+    );
 
     console.log('Migration completed successfully.');
   } catch (err) {

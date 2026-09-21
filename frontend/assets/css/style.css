@@ -239,6 +239,96 @@ section h2 {
     margin-bottom: 15px;
 }
 
+.menu-item-image {
+    width: 100%;
+    max-height: 160px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.profile-image-preview {
+    display: block;
+    width: 180px;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+.ratings-panel {
+    margin: 24px 0;
+}
+
+.ratings-summary {
+    display: grid;
+    gap: 14px;
+}
+
+.rating-overview {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 1.05rem;
+}
+
+.rating-overview strong {
+    color: #f39c12;
+    font-size: 1.5rem;
+}
+
+.item-rating-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.item-rating,
+.review-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.item-rating {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.item-rating span,
+.review-card > span {
+    color: #f39c12;
+    font-weight: 600;
+}
+
+.reviews-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.review-card p {
+    margin-top: 6px;
+}
+
+.review-form {
+    display: grid;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+}
+
+.review-form label,
+.rating-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
 .restaurant-card .actions {
     display: flex;
     gap: 10px;

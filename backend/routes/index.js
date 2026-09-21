@@ -6,6 +6,7 @@ const restaurantController = require('../controllers/restaurantController');
 const menuController = require('../controllers/menuController');
 const orderController = require('../controllers/orderController');
 const deliveryController = require('../controllers/deliveryController');
+const reviewController = require('../controllers/reviewController');
 const { authenticateToken } = require('../middleware/auth');
 const { authorizeRole } = require('../middleware/roleCheck');
 
@@ -36,9 +37,11 @@ router.post('/orders', authenticateToken, authorizeRole('customer'), orderContro
 router.get('/orders', authenticateToken, authorizeRole('customer'), orderController.getCustomerOrders);
 router.get('/orders/:id', authenticateToken, orderController.getOrderDetail);
 router.post('/orders/:id/cancel', authenticateToken, authorizeRole('customer'), orderController.cancelOrder);
+router.post('/orders/:id/review', authenticateToken, authorizeRole('customer'), reviewController.submitReview);
 
 // Order routes (restaurant admin)
 router.get('/restaurant/orders', authenticateToken, authorizeRole('restaurant_admin'), orderController.getRestaurantOrders);
+router.get('/restaurant/ratings', authenticateToken, authorizeRole('restaurant_admin'), reviewController.getRatingInsights);
 router.put('/orders/:id/accept', authenticateToken, authorizeRole('restaurant_admin'), orderController.acceptOrder);
 router.put('/orders/:id/reject', authenticateToken, authorizeRole('restaurant_admin'), orderController.rejectOrder);
 router.put('/orders/:id/status', authenticateToken, authorizeRole('restaurant_admin'), orderController.updateOrderStatus);

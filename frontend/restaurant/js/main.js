@@ -140,10 +140,12 @@ document.addEventListener('DOMContentLoaded', () => {
           description: document.getElementById('rest-description').value,
           address: document.getElementById('rest-address').value,
           phone: document.getElementById('rest-phone').value,
+          image_url: document.getElementById('rest-image').value.trim() || null,
           delivery_time: parseInt(document.getElementById('rest-delivery-time').value) || 30
         })
       });
       restaurant = data.restaurant;
+      updateRestaurantImagePreview(restaurant.image_url);
       alert('Restaurant updated!');
     } catch (error) {
       alert('Failed to update restaurant: ' + error.message);
@@ -152,6 +154,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Assign partner confirm
   document.getElementById('confirm-assign-btn').addEventListener('click', confirmAssign);
+  document.getElementById('rest-image').addEventListener('input', (event) => {
+    updateRestaurantImagePreview(event.target.value.trim());
+  });
 
   loadDashboard();
 });
@@ -161,6 +166,13 @@ async function loadTabContent(tabId) {
   else if (tabId === 'menu') await loadMenuItems();
   else if (tabId === 'orders') await loadRestaurantOrders();
   else if (tabId === 'profile') await loadRestaurantProfileForm();
+}
+
+function updateRestaurantImagePreview(url) {
+  const preview = document.getElementById('rest-image-preview');
+  if (!preview) return;
+  preview.src = url || '';
+  preview.classList.toggle('hidden', !url);
 }
 
 // Fetch restaurant profile without throwing when absent
@@ -203,6 +215,30 @@ async function loadDashboard() {
   } catch (error) {
     console.error(error);
   }
+  loadRatings();
+}
+
+async function loadRatings() {
+  const summary = document.getElementById('ratings-summary');
+  const reviews = document.getElementById('recent-reviews');
+  if (!summary || !reviews) return;
+  try {
+    const data = await apiRequest('/restaurant/ratings');
+    summary.innerHTML = `
+      <div class="rating-overview"><strong>${Number(data.summary.restaurant_rating || 0).toFixed(1)} ★</strong>
+      <span>${data.summary.restaurant_review_count} restaurant reviews</span></div>
+      <div class="item-rating-grid">${(data.item_ratings || []).map(item => `
+        <div class="item-rating"><strong>${item.name}</strong><span>${Number(item.average_rating || 0).toFixed(1)} ★ (${item.rating_count})</span></div>
+      `).join('') || '<span class="muted">No food ratings yet.</span>'}</div>
+    `;
+    reviews.innerHTML = (data.recent_reviews || []).map(review => `
+      <div class="review-card"><strong>${review.customer_name || 'Customer'}</strong>
+        <span>${review.rating} ★</span><p>${review.comment || 'No comment'}</p>
+      </div>
+    `).join('') || '<p class="muted">No customer feedback yet.</p>';
+  } catch (error) {
+    summary.innerHTML = `<p class="muted">Ratings unavailable: ${error.message}</p>`;
+  }
 }
 
 function createOrderSummary(order) {
@@ -231,6 +267,8 @@ async function loadRestaurantProfileForm() {
   document.getElementById('rest-description').value = restaurant.description || '';
   document.getElementById('rest-address').value = restaurant.address || '';
   document.getElementById('rest-phone').value = restaurant.phone || '';
+  document.getElementById('rest-image').value = restaurant.image_url || '';
+  updateRestaurantImagePreview(restaurant.image_url);
   document.getElementById('rest-delivery-time').value = restaurant.delivery_time || 30;
 }
 
@@ -260,6 +298,7 @@ function createMenuItemCard(item) {
   const card = document.createElement('div');
   card.className = 'menu-item-card';
   card.innerHTML = `
+    ${item.image_url ? `<img src="${item.image_url}" alt="${item.name}" class="menu-item-image">` : ''}
     <div class="item-info">
       <h4>${item.name}</h4>
       <p class="price">${formatCurrency(item.price)}</p>

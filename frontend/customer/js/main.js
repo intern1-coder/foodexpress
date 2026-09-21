@@ -176,6 +176,7 @@ function createMenuItemCard(item, restaurant) {
   const card = document.createElement('div');
   card.className = 'menu-item-card';
   card.innerHTML = `
+    ${item.image_url ? `<img src="${item.image_url}" alt="${item.name}" class="menu-item-image">` : ''}
     <div class="item-info">
       <h4>${item.name}</h4>
       <p class="price">${formatCurrency(item.price)}</p>
@@ -430,6 +431,68 @@ function renderTrack(order) {
     <h4>Items</h4>
     <div class="order-items">${items}</div>
     ${partner}
+    ${order.status === 'delivered' ? renderReviewForm(order) : ''}
+  `;
+
+  const reviewForm = content.querySelector('#review-form');
+  if (reviewForm) {
+    reviewForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const button = reviewForm.querySelector('button[type="submit"]');
+      button.disabled = true;
+      try {
+        const itemRatings = [...reviewForm.querySelectorAll('[data-item-id]')].map(input => ({
+          menu_item_id: Number(input.dataset.itemId),
+          rating: Number(input.value)
+        }));
+        await apiRequest(`/orders/${order.id}/review`, {
+          method: 'POST',
+          body: JSON.stringify({
+            restaurant_rating: Number(reviewForm.querySelector('[name="restaurant_rating"]').value),
+            comment: reviewForm.querySelector('[name="comment"]').value.trim(),
+            item_ratings: itemRatings
+          })
+        });
+        reviewForm.innerHTML = '<p class="success">Thanks for helping the restaurant improve!</p>';
+      } catch (error) {
+        alert(`Failed to submit rating: ${error.message}`);
+        button.disabled = false;
+      }
+    });
+  }
+}
+
+function renderReviewForm(order) {
+  const items = (order.items || []).map(item => `
+    <label class="rating-item">
+      <span>${item.name}</span>
+      <select data-item-id="${item.menu_item_id}" required>
+        <option value="">Rate food</option>
+        <option value="5">5 - Excellent</option>
+        <option value="4">4 - Good</option>
+        <option value="3">3 - Okay</option>
+        <option value="2">2 - Poor</option>
+        <option value="1">1 - Bad</option>
+      </select>
+    </label>
+  `).join('');
+  return `
+    <form id="review-form" class="review-form">
+      <h4>Rate your meal</h4>
+      <label>Restaurant rating
+        <select name="restaurant_rating" required>
+          <option value="">Select rating</option>
+          <option value="5">5 - Excellent</option>
+          <option value="4">4 - Good</option>
+          <option value="3">3 - Okay</option>
+          <option value="2">2 - Poor</option>
+          <option value="1">1 - Bad</option>
+        </select>
+      </label>
+      ${items}
+      <textarea name="comment" rows="2" placeholder="What could be improved?"></textarea>
+      <button type="submit" class="btn-primary">Submit Rating</button>
+    </form>
   `;
 }
 
