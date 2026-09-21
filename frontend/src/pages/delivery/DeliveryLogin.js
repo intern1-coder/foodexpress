@@ -16,7 +16,7 @@ const DeliveryLogin = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || '/delivery/dashboard';
+  const from = location.state?.from?.pathname || '/delivery';
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -57,7 +57,7 @@ const Navbar = () => {
 
             {isAuthenticated && isDeliveryPartner() && (
               <>
-                <Link to="/delivery/dashboard" className="nav-link" onClick={() => setMenuOpen(false)}>
+                <Link to="/delivery" className="nav-link" onClick={() => setMenuOpen(false)}>
                   Dashboard
                 </Link>
                 <Link to="/delivery/orders" className="nav-link" onClick={() => setMenuOpen(false)}>

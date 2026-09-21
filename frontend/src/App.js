@@ -1,10 +1,3 @@
-/**
- * App Component
- *
- * Main application with routing
- */
-
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import { AuthProvider, CartProvider } from './context';
 import { Navbar, Footer } from './components/layout';
@@ -32,7 +25,7 @@ import {
   AdminLayout
 } from './pages/admin';
 
-// Delivery Partner Pages
+// Delivery Pages
 import {
   DeliveryLogin,
   DeliveryDashboard,
@@ -41,148 +34,133 @@ import {
   DeliveryPartnerProfile
 } from './pages/delivery';
 
-// Styles
 import './styles/index.css';
 
-const App = () => {
+const MainLayout = () => {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <Router>
-          <div className="app">
-            <Routes>
-              {/* Admin Routes - No Navbar/Footer */}
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute requiredRole="admin">
-                    <AdminLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<Dashboard />} />
-                <Route path="restaurants" element={<ManageRestaurants />} />
-                <Route path="foods" element={<ManageFoods />} />
-                <Route path="orders" element={<ManageOrders />} />
-                <Route path="users" element={<ManageUsers />} />
-              </Route>
-
-              {/* Public Routes with Navbar/Footer */}
-              <Route
-                path="*"
-                element={
-                  <div className="main-layout">
-                    <Navbar />
-                    <main className="main-content">
-                      <Routes>
-                        {/* Public Routes */}
-                        <Route path="/" element={<Home />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
-                        <Route path="/restaurants/:id" element={<RestaurantDetails />} />
-
-                        {/* Protected Customer Routes */}
-                        <Route
-                          path="/cart"
-                          element={
-                            <ProtectedRoute requiredRole="customer">
-                              <Cart />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/checkout"
-                          element={
-                            <ProtectedRoute requiredRole="customer">
-                              <Checkout />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/orders"
-                          element={
-                            <ProtectedRoute requiredRole="customer">
-                              <MyOrders />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/orders/:id"
-                          element={
-                            <ProtectedRoute requiredRole="customer">
-                              <MyOrders />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/profile"
-                          element={
-                            <ProtectedRoute requiredRole="customer">
-                              <Profile />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        {/* Delivery Partner Routes */}
-                        <Route
-                          path="/delivery"
-                          element={
-                            <div className="main-layout">
-                              <Navbar />
-                              <main className="main-content">
-                                <Routes>
-                                  <Route path="login" element={<DeliveryLogin />} />
-                                  <Route
-                                    element={
-                                      <ProtectedRoute requiredRole="delivery_partner">
-                                        <DeliveryPartnerLayout />
-                                      </ProtectedRoute>
-                                    }
-                                  >
-                                    <Route index element={<DeliveryDashboard />} />
-                                    <Route path="orders" element={<AssignedOrders />} />
-                                    <Route path="orders/:id" element={<OrderDetails />} />
-                                    <Route path="profile" element={<DeliveryPartnerProfile />} />
-                                  </Route>
-                                  {/* 404 Page for Delivery Partner */}
-                                  <Route path="*" element={<NotFound />} />
-                                </Routes>
-                              </main>
-                              <Footer />
-                            </div>
-                          }
-                        />
-
-                        {/* 404 Page */}
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
-                    </main>
-                    <Footer />
-                  </div>
-                }
-              />
-            </Routes>
-          </div>
-        </Router>
-      </CartProvider>
-    </AuthProvider>
+    <div className="main-layout">
+      <Navbar />
+      <main className="main-content">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
   );
 };
 
-// 404 Not Found Component
 const NotFound = () => (
   <div className="error-page">
     <div className="error-content">
       <h1>404</h1>
       <p>Page not found</p>
-      <a href="/" className="btn btn-primary">Go Home</a>
+      <a href="/" className="btn btn-primary">
+        Go Home
+      </a>
     </div>
   </div>
 );
 
-// Delivery Partner Layout (simple layout for delivery partner protected routes)
-const DeliveryPartnerLayout = () => {
-  return <Outlet />;
-};
+function App() {
+  return (
+    <AuthProvider>
+      <CartProvider>
+        <Router>
+          <Routes>
+
+            {/* Customer Routes */}
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/restaurants/:id" element={<RestaurantDetails />} />
+
+              <Route
+                path="/cart"
+                element={
+                  <ProtectedRoute requiredRole="customer">
+                    <Cart />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/checkout"
+                element={
+                  <ProtectedRoute requiredRole="customer">
+                    <Checkout />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/orders"
+                element={
+                  <ProtectedRoute requiredRole="customer">
+                    <MyOrders />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/orders/:id"
+                element={
+                  <ProtectedRoute requiredRole="customer">
+                    <MyOrders />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute requiredRole="customer">
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Delivery Routes */}
+              <Route path="/delivery/login" element={<DeliveryLogin />} />
+
+              <Route
+                path="/delivery"
+                element={
+                  <ProtectedRoute requiredRole="delivery_partner">
+                    <Outlet />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<DeliveryDashboard />} />
+                <Route path="orders" element={<AssignedOrders />} />
+                <Route path="orders/:id" element={<OrderDetails />} />
+                <Route path="profile" element={<DeliveryPartnerProfile />} />
+              </Route>
+            </Route>
+
+            {/* Admin Routes */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Dashboard />} />
+              <Route path="restaurants" element={<ManageRestaurants />} />
+              <Route path="foods" element={<ManageFoods />} />
+              <Route path="orders" element={<ManageOrders />} />
+              <Route path="users" element={<ManageUsers />} />
+            </Route>
+
+            {/* 404 */}
+            <Route path="*" element={<NotFound />} />
+
+          </Routes>
+        </Router>
+      </CartProvider>
+    </AuthProvider>
+  );
+}
 
 export default App;
