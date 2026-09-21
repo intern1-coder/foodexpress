@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Express - Customer Dashboard</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Food Express</h1>
+            <div class="user-info">
+                <span id="user-name">Welcome, Customer!</span>
+                <button id="logout-btn">Logout</button>
+            </div>
+        </header>
+
+        <nav>
+            <button class="nav-btn active" id="browse-restaurants-btn">Browse Restaurants</button>
+            <button class="nav-btn" id="my-orders-btn">My Orders</button>
+            <button class="nav-btn" id="profile-btn">Profile</button>
+        </nav>
+
+        <main>
+            <section id="browse-restaurants" class="tab-content active">
+                <h2>Discover Restaurants</h2>
+                <input type="text" id="restaurant-search" class="search-input" placeholder="Search restaurants or cuisine...">
+                <div id="restaurants-list" class="restaurants-grid">
+                    <!-- Restaurants will be loaded here -->
+                </div>
+            </section>
+
+            <section id="my-orders" class="tab-content">
+                <h2>My Orders</h2>
+                <div id="orders-list" class="orders-list">
+                    <!-- Orders will be loaded here -->
+                </div>
+            </section>
+
+            <section id="profile" class="tab-content">
+                <h2>Profile</h2>
+                <form id="profile-form">
+                    <div class="form-group">
+                        <label for="profile-name">Full Name</label>
+                        <input type="text" id="profile-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-email">Email</label>
+                        <input type="email" id="profile-email" required readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-phone">Phone Number</label>
+                        <input type="tel" id="profile-phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-address">Delivery Address</label>
+                        <textarea id="profile-address" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Update Profile</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <!-- Floating cart button -->
+    <button id="cart-fab" class="cart-fab hidden">Cart <span id="cart-count-badge">0</span></button>
+
+    <!-- Menu Modal -->
+    <div id="menu-modal" class="modal">
+        <div class="modal-content modal-lg">
+            <span class="close-btn" data-close="menu-modal">&times;</span>
+            <h3 id="menu-modal-title">Menu</h3>
+            <div id="menu-items-list" class="menu-items-grid">
+                <!-- Menu items loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" data-close="cart-modal">&times;</span>
+            <h3>Your Cart</h3>
+            <div id="cart-items"></div>
+            <div class="cart-summary">
+                <div class="summary-row"><span>Subtotal</span><span id="cart-subtotal">$0.00</span></div>
+                <div class="summary-row"><span>Delivery Fee</span><span id="cart-fee">$2.00</span></div>
+                <div class="summary-row total"><span>Total</span><span id="cart-total">$0.00</span></div>
+            </div>
+            <div class="form-group">
+                <label for="cart-address">Delivery Address</label>
+                <textarea id="cart-address" rows="2" placeholder="Street, City"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Payment Mode</label>
+                <div class="payment-options">
+                    <label class="payment-option">
+                        <input type="radio" name="payment_mode" value="cod" checked>
+                        <span>Cash on Delivery</span>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="payment_mode" value="online">
+                        <span>UPI / Card (Online)</span>
+                    </label>
+                </div>
+            </div>
+            <button id="place-order-btn" class="btn-primary btn-block">Place Order</button>
+        </div>
+    </div>
+
+    <!-- Track Order Modal -->
+    <div id="track-modal" class="modal">
+        <div class="modal-content modal-lg">
+            <span class="close-btn" data-close="track-modal">&times;</span>
+            <h3 id="track-title">Track Order</h3>
+            <div id="track-content"></div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

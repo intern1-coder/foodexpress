@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Express - Restaurant Dashboard</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Food Express</h1>
+            <div class="user-info">
+                <span id="user-name">Welcome, Restaurant Admin!</span>
+                <button id="logout-btn">Logout</button>
+            </div>
+        </header>
+
+        <nav>
+            <button class="nav-btn active" id="dashboard-btn">Dashboard</button>
+            <button class="nav-btn" id="menu-btn">Manage Menu</button>
+            <button class="nav-btn" id="orders-btn">Orders</button>
+            <button class="nav-btn" id="profile-btn">Profile</button>
+        </nav>
+
+        <main>
+            <section id="dashboard" class="tab-content active">
+                <!-- Restaurant setup (shown only if no restaurant yet) -->
+                <div id="restaurant-setup" class="setup-card hidden">
+                    <h2>Set Up Your Restaurant</h2>
+                    <p class="muted">Create your restaurant profile to start receiving orders.</p>
+                    <form id="setup-restaurant-form">
+                        <div class="form-group">
+                            <label for="setup-name">Restaurant Name</label>
+                            <input type="text" id="setup-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="setup-cuisine">Cuisine</label>
+                            <input type="text" id="setup-cuisine" placeholder="e.g. Italian, Indian, Chinese">
+                        </div>
+                        <div class="form-group">
+                            <label for="setup-description">Description</label>
+                            <textarea id="setup-description" rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="setup-address">Address</label>
+                            <input type="text" id="setup-address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="setup-phone">Phone</label>
+                            <input type="tel" id="setup-phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="setup-image">Image URL</label>
+                            <input type="text" id="setup-image" placeholder="Optional">
+                        </div>
+                        <button type="submit" class="btn-primary">Create Restaurant</button>
+                    </form>
+                </div>
+
+                <div id="dashboard-content">
+                    <h2>Restaurant Dashboard</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Today's Orders</h3>
+                            <p id="today-orders">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Today's Revenue</h3>
+                            <p id="today-revenue">$0.00</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Pending Orders</h3>
+                            <p id="pending-orders">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Ready / Active</h3>
+                            <p id="delivery-out">0</p>
+                        </div>
+                    </div>
+
+                    <h3>Recent Orders</h3>
+                    <div id="recent-orders" class="orders-list">
+                        <!-- Recent orders will be loaded here -->
+                    </div>
+                </div>
+            </section>
+
+            <section id="menu" class="tab-content">
+                <h2>Manage Menu</h2>
+                <button id="add-menu-item-btn" class="btn-primary">Add Menu Item</button>
+                <div id="menu-items-list" class="menu-items-grid">
+                    <!-- Menu items will be loaded here -->
+                </div>
+
+                <!-- Add Menu Item Modal -->
+                <div id="add-menu-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-btn" data-close="add-menu-modal">&times;</span>
+                        <h3>Add Menu Item</h3>
+                        <form id="add-menu-form">
+                            <div class="form-group">
+                                <label for="menu-name">Item Name</label>
+                                <input type="text" id="menu-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="menu-description">Description</label>
+                                <textarea id="menu-description" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="menu-price">Price ($)</label>
+                                <input type="number" id="menu-price" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="menu-category">Category</label>
+                                <select id="menu-category">
+                                    <option value="appetizer">Appetizer</option>
+                                    <option value="main">Main Course</option>
+                                    <option value="dessert">Dessert</option>
+                                    <option value="beverage">Beverage</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="menu-image">Image URL</label>
+                                <input type="text" id="menu-image" placeholder="Optional">
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="menu-available" checked>
+                                    Available
+                                </label>
+                            </div>
+                            <button type="submit" class="btn-primary">Add Item</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section id="orders" class="tab-content">
+                <h2>Order Management</h2>
+                <div class="orders-filter">
+                    <select id="order-status-filter">
+                        <option value="all">All Orders</option>
+                        <option value="pending">Pending</option>
+                        <option value="accepted">Accepted</option>
+                        <option value="preparing">Preparing</option>
+                        <option value="ready_for_pickup">Ready for Pickup</option>
+                        <option value="out_for_delivery">Out for Delivery</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div id="restaurant-orders-list" class="orders-list">
+                    <!-- Orders will be loaded here -->
+                </div>
+            </section>
+
+            <section id="profile" class="tab-content">
+                <h2>My Profile</h2>
+                <form id="profile-form">
+                    <div class="form-group">
+                        <label for="profile-name">Full Name</label>
+                        <input type="text" id="profile-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-email">Email</label>
+                        <input type="email" id="profile-email" required readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-phone">Phone Number</label>
+                        <input type="tel" id="profile-phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-address">Address</label>
+                        <textarea id="profile-address" rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Update Profile</button>
+                </form>
+
+                <h2 class="mt-20">Restaurant Profile</h2>
+                <form id="restaurant-profile-form">
+                    <div class="form-group">
+                        <label for="rest-name">Restaurant Name</label>
+                        <input type="text" id="rest-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="rest-cuisine">Cuisine</label>
+                        <input type="text" id="rest-cuisine">
+                    </div>
+                    <div class="form-group">
+                        <label for="rest-description">Description</label>
+                        <textarea id="rest-description" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="rest-address">Address</label>
+                        <input type="text" id="rest-address">
+                    </div>
+                    <div class="form-group">
+                        <label for="rest-phone">Phone</label>
+                        <input type="tel" id="rest-phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="rest-delivery-time">Estimated Delivery Time (min)</label>
+                        <input type="number" id="rest-delivery-time" min="5">
+                    </div>
+                    <button type="submit" class="btn-primary">Update Restaurant</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <!-- Assign Delivery Partner Modal -->
+    <div id="assign-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" data-close="assign-modal">&times;</span>
+            <h3>Assign Delivery Partner</h3>
+            <div id="partners-list"></div>
+            <button id="confirm-assign-btn" class="btn-primary btn-block mt-20" disabled>Assign Selected Partner</button>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

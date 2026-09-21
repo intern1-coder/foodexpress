@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Express - Select Your Role</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.2rem;
+        }
+
+        .role-cards {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .role-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            width: 220px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .role-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .role-card.selected {
+            border-color: #4CAF50;
+            transform: translateY(-5px);
+        }
+
+        .role-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .role-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .role-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: transform 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @media (max-width: 600px) {
+            .role-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .role-card {
+                width: 80%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Food Express</h1>
+        <p class="subtitle">Select your role to continue</p>
+
+        <div class="role-cards">
+            <div class="role-card" id="customer-card" data-role="customer" role="button" tabindex="0" aria-pressed="false">
+                <div class="role-icon">👨‍🍳</div>
+                <h3>Customer</h3>
+                <p>Browse restaurants, place orders, and track deliveries</p>
+            </div>
+
+            <div class="role-card" id="restaurant-card" data-role="restaurant_admin" role="button" tabindex="0" aria-pressed="false">
+                <div class="role-icon">🏪</div>
+                <h3>Restaurant Admin</h3>
+                <p>Manage your restaurant, menu, and orders</p>
+            </div>
+
+            <div class="role-card" id="delivery-card" data-role="delivery_partner" role="button" tabindex="0" aria-pressed="false">
+                <div class="role-icon">🛵</div>
+                <h3>Delivery Partner</h3>
+                <p>Accept and manage delivery orders</p>
+            </div>
+        </div>
+
+        <button class="btn" id="continue-btn" disabled>Continue</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const roleCards = document.querySelectorAll('.role-card');
+            const continueBtn = document.getElementById('continue-btn');
+            let selectedRole = null;
+
+            const selectRole = (card) => {
+                roleCards.forEach(c => {
+                    const isSelected = c === card;
+                    c.classList.toggle('selected', isSelected);
+                    c.setAttribute('aria-pressed', String(isSelected));
+                });
+                selectedRole = card.dataset.role;
+                continueBtn.disabled = false;
+            };
+
+            roleCards.forEach(card => {
+                card.addEventListener('click', () => selectRole(card));
+                card.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        selectRole(card);
+                    }
+                });
+            });
+
+            continueBtn.addEventListener('click', () => {
+                if (selectedRole) {
+                    // Store selected role in localStorage and redirect
+                    localStorage.setItem('userRole', selectedRole);
+
+                    // Redirect to auth page
+                    window.location.href = 'auth/index.html?role=' + selectedRole;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
